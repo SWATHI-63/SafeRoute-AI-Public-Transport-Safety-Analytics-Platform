@@ -313,50 +313,44 @@ export default function Dashboard() {
                     </div>
                 </div>
               </div>
-              
-              {/* Route Feedback Section */}
-              <div className="bg-slate-100/80 rounded-xl p-4 border border-slate-200 mt-6">
-                <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
-                  Route Feedback
-                </h3>
-                <p className="text-xs text-slate-500 mb-3">Is this current route feeling safe?</p>
-                
-                {feedbackSubmitted ? (
-                  <div className="bg-green-100 text-green-700 p-3 rounded-lg flex items-center justify-center gap-2 text-sm font-bold">
-                    <CheckCircle2 className="w-5 h-5" />
-                    Thank you for your feedback!
-                  </div>
-                ) : (
-                  <div className="flex gap-3">
-                    <button 
-                      onClick={() => handleRouteFeedback(true)}
-                      disabled={feedbackLoading}
-                      className="flex-1 flex flex-col items-center justify-center gap-1 py-3 bg-white border border-slate-200 hover:border-green-400 hover:bg-green-50 hover:text-green-600 font-semibold text-xs text-slate-600 rounded-lg transition-all shadow-sm disabled:opacity-50"
-                    >
-                      <ThumbsUp className="w-5 h-5 mb-1" />
-                      Feels Safe
-                    </button>
-                    <button 
-                      onClick={() => handleRouteFeedback(false)}
-                      disabled={feedbackLoading}
-                      className="flex-1 flex flex-col items-center justify-center gap-1 py-3 bg-white border border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 font-semibold text-xs text-slate-600 rounded-lg transition-all shadow-sm disabled:opacity-50"
-                    >
-                      <ThumbsDown className="w-5 h-5 mb-1" />
-                      Feels Unsafe
-                    </button>
-                  </div>
-                )}
-              </div>
-
             </div>
           )}
         </div>
 
-        <div className="p-6 bg-slate-50 border-t border-slate-100">
-            <button onClick={handleSOS} className="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-200 transition-all active:scale-95 flex justify-center items-center gap-2">
-                <ShieldAlert className="h-6 w-6" />
-                EMERGENCY SOS
-            </button>
+        {/* Route Feedback Section (Replaced SOS) */}
+        <div className="p-6 bg-slate-50 border-t border-slate-100 mt-auto">
+          <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
+            Route Feedback
+          </h3>
+          <p className="text-xs text-slate-500 mb-3">Is this current route feeling safe?</p>
+          
+          {feedbackSubmitted ? (
+            <div className="bg-green-100 text-green-700 p-3 rounded-lg flex items-center justify-center gap-2 text-sm font-bold">
+              <CheckCircle2 className="w-5 h-5" />
+              Thank you for your feedback!
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <button 
+                onClick={() => handleRouteFeedback(true)}
+                disabled={feedbackLoading || !showResults}
+                className="flex-1 flex flex-col items-center justify-center gap-1 py-3 bg-white border border-slate-200 hover:border-green-400 hover:bg-green-50 hover:text-green-600 font-semibold text-xs text-slate-600 rounded-lg transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                title={!showResults ? "Please analyze a route first" : ""}
+              >
+                <ThumbsUp className="w-5 h-5 mb-1" />
+                Feels Safe
+              </button>
+              <button 
+                onClick={() => handleRouteFeedback(false)}
+                disabled={feedbackLoading || !showResults}
+                className="flex-1 flex flex-col items-center justify-center gap-1 py-3 bg-white border border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 font-semibold text-xs text-slate-600 rounded-lg transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                title={!showResults ? "Please analyze a route first" : ""}
+              >
+                <ThumbsDown className="w-5 h-5 mb-1" />
+                Feels Unsafe
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
