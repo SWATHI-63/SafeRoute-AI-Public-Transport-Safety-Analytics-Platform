@@ -430,7 +430,7 @@ export default function Dashboard() {
         {/* SafeBot Toggle Button */}
         <button 
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="absolute bottom-24 right-6 bg-slate-800/90 hover:bg-slate-800 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold shadow-[0_4px_20px_rgba(30,41,59,0.4)] transition-all flex items-center justify-center gap-2 z-[1000] border border-slate-600"
+          className="absolute bottom-[200px] right-6 bg-slate-800/90 hover:bg-slate-800 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold shadow-[0_4px_20px_rgba(30,41,59,0.4)] transition-all flex items-center justify-center gap-2 z-[1000] border border-slate-600"
         >
           <Bot className="w-5 h-5 text-brand-400" />
           <span>SafeBot AI</span>
@@ -439,11 +439,57 @@ export default function Dashboard() {
         {/* Floating Report Incident Button */}
         <button 
           onClick={() => setShowReportModal(true)}
-          className="absolute bottom-8 right-6 bg-brand-500/90 hover:bg-brand-500 backdrop-blur-md text-white px-5 py-3 rounded-full font-bold shadow-[0_4px_20px_rgba(236,72,153,0.4)] transition-all flex items-center gap-2 z-[1000] border border-brand-400"
+          className="absolute bottom-36 right-6 bg-brand-500/90 hover:bg-brand-500 backdrop-blur-md text-white px-5 py-3 rounded-full font-bold shadow-[0_4px_20px_rgba(236,72,153,0.4)] transition-all flex items-center gap-2 z-[1000] border border-brand-400"
         >
           <AlertOctagon className="w-5 h-5" />
           Report Incident
         </button>
+
+        {/* Emergency SOS Floating Button (Moved from Sidebar) */}
+        {!sosActive ? (
+          <button 
+            onClick={handleSOS}
+            className="absolute bottom-8 right-6 bg-red-600/90 hover:bg-red-600 backdrop-blur-md text-white px-6 py-4 rounded-full font-extrabold shadow-[0_4px_30px_rgba(220,38,38,0.6)] transition-all active:scale-95 flex items-center justify-center gap-2 z-[1000] border border-red-500 hover:shadow-[0_4px_40px_rgba(220,38,38,0.8)]"
+          >
+            <ShieldAlert className="h-6 w-6" />
+            <span className="tracking-wide">SOS</span>
+          </button>
+        ) : (
+          <div className="absolute bottom-6 right-6 bg-white rounded-[2rem] shadow-2xl p-6 w-72 z-[1100] border-2 border-red-500 animate-in slide-in-from-bottom flex flex-col items-center">
+            {sosDispatched ? (
+              <>
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-500 mb-4 shadow-inner">
+                   <ShieldAlert className="w-10 h-10" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">Help is arriving</h3>
+                <p className="text-sm text-slate-500 text-center mb-6">Emergency services and emergency contacts have verified your location.</p>
+                <div className="flex bg-slate-100 w-full rounded-xl p-3 gap-3 mb-6 items-center border border-slate-200">
+                    <div className="h-2 w-2 rounded-full bg-brand-500 animate-pulse"></div>
+                    <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Live ETA</span>
+                        <span className="text-sm font-semibold text-slate-800">3 mins (0.8km away)</span>
+                    </div>
+                </div>
+                <button onClick={() => setSosActive(false)} className="w-full py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-100">
+                    False Alarm / Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center text-red-500 mb-4 shadow-inner relative">
+                   <div className="absolute inset-0 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                   <span className="text-3xl font-extrabold font-mono absolute z-10">{sosCountdown}</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2 whitespace-nowrap">Dispatching SOS...</h3>
+                <p className="text-sm text-slate-500 text-center mb-6 max-w-[200px]">Sharing live location and camera feed to emergency contacts.</p>
+                
+                <button onClick={cancelSOS} className="w-full py-3 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition-colors border border-slate-300">
+                    Cancel Request
+                </button>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Glassmorphism Report Modal */}
         {showReportModal && (
