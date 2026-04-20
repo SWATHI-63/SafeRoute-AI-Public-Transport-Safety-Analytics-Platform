@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Navigation, ShieldAlert, Map, AlertTriangle, Users, TrendingUp } from 'lucide-react';
+import { Navigation, ShieldAlert, Map, AlertTriangle, Users, TrendingUp, ThumbsUp } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -23,9 +23,9 @@ export default function LandingPage() {
             <Link to="/dashboard" className="px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-lg transition-all shadow-xl shadow-slate-300 flex justify-center items-center gap-2">
               Launch Dashboard <Navigation className="w-5 h-5"/>
             </Link>
-            <button className="px-8 py-4 bg-white border-2 border-slate-200 hover:border-brand-300 text-slate-700 rounded-xl font-bold text-lg transition-all flex justify-center items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-red-500"/> View SOS Features
-            </button>
+            <Link to="/dashboard" className="px-8 py-4 bg-white border-2 border-slate-200 hover:border-brand-300 text-slate-700 rounded-xl font-bold text-lg transition-all flex justify-center items-center gap-2">
+              <ThumbsUp className="w-5 h-5 text-green-500"/> Rate Your Route
+            </Link>
           </div>
         </div>
         
