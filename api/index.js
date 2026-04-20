@@ -15,6 +15,8 @@ let unsafeZones = [
     { id: 3, coords: [9.9252, 78.1198], radius: 400, risk: 'High', reports: 8, type: 'Previous Incidents', city: 'Madurai' }
 ];
 
+let routeFeedback = [];
+
 // GET: Fetch all unsafe zones to display on the map heatmaps
 app.get('/api/incidents', (req, res) => {
     res.json(unsafeZones);
@@ -101,6 +103,41 @@ app.post('/api/incidents', (req, res) => {
     setTimeout(() => {
         res.status(201).json(newIncident);
     }, 500);
+});
+
+// POST: Submit user feedback about route safety
+app.post('/api/feedback', (req, res) => {
+    const { route, isSafe, comments } = req.body;
+    
+    if (isSafe === undefined) {
+        return res.status(400).json({ error: 'Safety rating is required' });
+    }
+
+    const newFeedback = {
+        id: routeFeedback.length + 1,
+        route: route || 'Unknown Route',
+        isSafe,
+        comments: comments || '',
+        timestamp: new Date()
+    };
+
+    routeFeedback.push(newFeedback);
+
+    // If marked as unsafe, we can dynamically add a new risk zone on that route
+    if (!isSafe && req.body.location) {
+        unsafeZones.push({
+            id: unsafeZones.length + 1,
+            coords: req.body.location,
+            radius: 250,
+            risk: 'Medium',
+            reports: 1,
+            type: 'User Reported Unsafe Route'
+        });
+    }
+    
+    setTimeout(() => {
+        res.status(201).json({ message: 'Feedback received successfully', feedback: newFeedback });
+    }, 400);
 });
 
 if (process.env.NODE_ENV !== 'production') {

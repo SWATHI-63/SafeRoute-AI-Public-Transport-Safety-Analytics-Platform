@@ -71,6 +71,10 @@ export default function Dashboard() {
   const [sourceInput, setSourceInput] = useState('Chennai');
   const [destInput, setDestInput] = useState('Coimbatore');
   
+  // Feedback State
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+
   // SOS State
   const [sosActive, setSosActive] = useState(false);
   const [sosCountdown, setSosCountdown] = useState(5);
@@ -115,7 +119,8 @@ export default function Dashboard() {
 
   // Fetch unsafe zones from the backend on load
   useEffect(() => {
-    fetch('http://localhost:5000/api/incidents')
+    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/incidents' : '/api/incidents';
+    fetch(apiUrl)
       .then(res => res.json())
       .then(data => setUnsafeZones(data))
       .catch(err => console.error("Could not load backend map data:", err));
@@ -123,8 +128,9 @@ export default function Dashboard() {
 
   const handleAnalyze = () => {
     setAnalyzing(true);
+    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/route' : '/api/route';
     // Fetch dynamic route based on user input
-    fetch(`http://localhost:5000/api/route?source=${encodeURIComponent(sourceInput)}&destination=${encodeURIComponent(destInput)}`)
+    fetch(`${apiUrl}?source=${encodeURIComponent(sourceInput)}&destination=${encodeURIComponent(destInput)}`)
       .then(res => res.json())
       .then(data => {
         if(data.waypoints) {
@@ -172,8 +178,9 @@ export default function Dashboard() {
   const handleReportSubmit = () => {
     if (!reportType) return;
     
+    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/incidents' : '/api/incidents';
     // POST request to backend
-    fetch('http://localhost:5000/api/incidents', {
+    fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -197,6 +204,30 @@ export default function Dashboard() {
       // Failsafe for if the backend isn't running 
       setReportSubmitted(true);
       setTimeout(() => setShowReportModal(false), 2500);
+    });
+  };
+
+  const handleRouteFeedback = (isSafe) => {
+    setFeedbackLoading(true);
+    // Use relative path for Vercel compatibility, or fallback to dev localhost
+    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/feedback' : '/api/feedback';
+    
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        route: `${sourceInput} to ${destInput}`,
+        isSafe, 
+        location: MAP_CENTER // Typically would be the user's live GPS
+      })
+    })
+    .catch(err => console.error('Failed to submit feedback', err))
+    .finally(() => {
+      setFeedbackSubmitted(true);
+      setFeedbackLoading(false);
+      setTimeout(() => setFeedbackSubmitted(false), 4000);
     });
   };
 
@@ -282,6 +313,41 @@ export default function Dashboard() {
                     </div>
                 </div>
               </div>
+              
+              {/* Route Feedback Section */}
+              <div className="bg-slate-100/80 rounded-xl p-4 border border-slate-200 mt-6">
+                <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
+                  Route Feedback
+                </h3>
+                <p className="text-xs text-slate-500 mb-3">Is this current route feeling safe?</p>
+                
+                {feedbackSubmitted ? (
+                  <div className="bg-green-100 text-green-700 p-3 rounded-lg flex items-center justify-center gap-2 text-sm font-bold">
+                    <CheckCircle2 className="w-5 h-5" />
+                    Thank you for your feedback!
+                  </div>
+                ) : (
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => handleRouteFeedback(true)}
+                      disabled={feedbackLoading}
+                      className="flex-1 flex flex-col items-center justify-center gap-1 py-3 bg-white border border-slate-200 hover:border-green-400 hover:bg-green-50 hover:text-green-600 font-semibold text-xs text-slate-600 rounded-lg transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <ThumbsUp className="w-5 h-5 mb-1" />
+                      Feels Safe
+                    </button>
+                    <button 
+                      onClick={() => handleRouteFeedback(false)}
+                      disabled={feedbackLoading}
+                      className="flex-1 flex flex-col items-center justify-center gap-1 py-3 bg-white border border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 font-semibold text-xs text-slate-600 rounded-lg transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <ThumbsDown className="w-5 h-5 mb-1" />
+                      Feels Unsafe
+                    </button>
+                  </div>
+                )}
+              </div>
+
             </div>
           )}
         </div>
